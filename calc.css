@@ -1,0 +1,89 @@
+button{
+	width:20%;
+	aspect-ratio: 2/2;
+	font-size:30px;
+	margin: 1%;
+	font-family: serif;
+	font-weight: bold;
+	border-radius: 50px;
+}
+.box{
+	border-radius:40px;
+	width: 25%;
+	padding: 3px;
+	box-shadow: 1px 1px 10px 3px red;
+
+}
+.header{
+	font-size: 5vw;
+	font-family: serif;
+	text-align: center;
+	font-weight: bold;
+	background-image: radial-gradient(red,yellow,green,magenta,blue);
+	-webkit-background-clip:text ;
+	color: transparent;
+	animation: clr 1s linear infinite;
+	margin: 0% 10% 1%;
+}
+@keyframes clr{
+	0%{	background-image: radial-gradient(red,yellow,green,magenta,blue);}
+	33%{background-image: radial-gradient(green,magenta,blue,red,yellow);}
+	66%{background-image: radial-gradient(magenta,blue,yellow,green,red);}
+	100%{background-image: radial-gradient(magenta,yellow,blue,red,green);}
+}
+input{
+	width:86%;
+	border:0px solid black;
+	font-size:30px;
+	font-family: serif;
+	color:blue;
+	text-align: right;
+}
+#textbox2{
+	color: red;
+	}
+input:focus{
+		outline:0px;
+}
+#btn1{
+	background: lightgrey;
+}
+#btn2{
+	background: #f78336;
+	color: white;
+}
+#btnx{
+	background: #ff0000;
+	color: white;
+}
+#btnc{
+	background: #000000;
+	color: white;
+}
+#btne{
+	background:#e61e6e;
+	color: white;
+}
+.footer{
+	margin: 2% 0%;
+	padding: 1%;
+	background: lightgrey;
+	text-align: center;
+}
+.footer span{
+	color: red;
+	font-weight: bold;
+	font-size: 20px;
+}
+.Page_header{
+	background:black;
+	color: white;
+	text-align: center;
+	font-size: 2vw;
+}
+@media screen and (max-width: 700px){
+	.box{width: 70%;}
+	.Page_header{font-size: 5vw;}
+	.header{font-size: 7vw;}
+
+}
