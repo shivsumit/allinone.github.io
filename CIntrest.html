@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Compound Intrest</title>
+	<link rel="stylesheet" type="text/css" href="Cintrest.css">
+</head>
+<body>
+<div class="Page_header">
+	All in One Solutions 
+</div>
+
+<script type="text/javascript" src="CIntrest.js"></script>
+
+<div class="header">Compound Intrest Calculator</div>
+<center>
+<div id="box1">
+<label> Principle : </label><br>
+<input   id="pri" autofocus placeholder="Enter Amount"><br>
+<label> Rate : </label><br>
+<input   id="rate" placeholder="Enter Rate %"><br>
+<label> Time Given: </label><br>
+<select id="tg">
+	<option value="ss" selected disabled > Choose Option</option>
+	<option value="month"> Months</option>
+	<option value="year" > Years</option>
+</select><br>
+<label> Time : </label><br>
+<input   id="time" placeholder="Enter Time"><br>
+<label> Intrest Compounded : </label><br>
+<select id="ic">
+	<option value="ss" selected disabled > Choose Option</option>
+	<option value="month"> Monthly</option>
+	<option value="quater"> Quaterly</option>
+	<option value="halfyear"> Half-Yearly</option>
+	<option value="year" > Yearly</option>
+	<option value="week" > Weekskly</option>
+	<option value="days" > Daily</option>
+</select><br>
+<button onclick="myfun()"> Calculate </button>
+</div>
+
+
+
+<div id="box2">
+<div class="header2">Result</div>
+<label> Principle (&#8377): </label><br>
+<input readonly  id="pri1"><br>
+ 
+<label> Rate (%) :</label><br>
+<input readonly  id="rate1"><br>
+
+<label> Time  :</label><br>
+<input readonly  id="time1"><br>
+
+<label> Intrest (&#8377) :</label><br>
+<input readonly  id="int1"><br>
+
+<label> Total Amount (&#8377) :</label><br>
+<input readonly id="amnt1"><br>
+
+<button onclick="location.reload()"> Reset </button>
+</div>
+</center>
+
+<div class="footer"> &#169 Designed by <span>Sumit Singh Patel</span> 
+</div>
+</body></html>

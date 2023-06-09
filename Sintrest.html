@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple Intrest</title>
+	<link rel="stylesheet" type="text/css" href="Sintrest.css">
+</head>
+<body>
+<div class="Page_header">
+	All in One Solutions 
+</div>
+
+<script type="text/javascript" src="Sintrest.js"></script>
+
+<div class="header">Simple Intrest Calculator</div>
+<center>
+<div id="box1" align="center">
+<label> Principle : </label><br>
+<input   id="pri" autofocus placeholder="Enter Amount"><br>
+<label> Rate : </label><br>
+<input   id="rate" placeholder="Enter Rate %"><br>
+<label> Time : </label><br>
+<input   id="time" placeholder="Enter Time in years"><br>
+
+<button onclick="myfun()"> Calculate </button>
+</div>
+
+
+
+<div id="box2">
+<div class="header2">Result</div>
+<label> Principle (&#8377): </label><br>
+<input readonly  id="pri1"><br>
+ 
+<label> Rate (%) :</label><br>
+<input readonly  id="rate1"><br>
+
+<label> Time  :</label><br>
+<input readonly  id="time1"><br>
+
+<label> Intrest (&#8377) :</label><br>
+<input readonly  id="int1"><br>
+
+<label> Total Amount (&#8377) :</label><br>
+<input readonly id="amnt1"><br>
+
+<button onclick="location.reload()"> Reset </button>
+</div>
+</center>
+
+<div class="footer"> &#169 Designed by <span>Sumit Singh Patel</span> 
+</div>
+</body></html>

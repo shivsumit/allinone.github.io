@@ -1,0 +1,116 @@
+.Page_header{
+	background:black;
+	color: white;
+	text-align: center;
+	font-size: 2vw;
+}
+
+#box1{
+	border-radius:40px;
+	width: 450px;
+	padding: 5px;
+	box-shadow: 1px 1px 10px 3px blue;
+	position: relative;
+
+
+}
+
+#box2{
+	border-radius:40px;
+	width: 450px;
+	padding: 5px;
+	box-shadow: 1px 1px 10px 3px blue;
+	position: relative;
+
+	display: none;
+
+}
+.header{
+	font-size: 4vw;
+	font-family: serif;
+	text-align: center;
+	font-weight: bold;
+	background-image: radial-gradient(red,yellow,green,magenta,blue);
+	-webkit-background-clip:text ;
+	color: transparent;
+	animation: clr 1s linear infinite;
+	margin: 0% 10% 1%;
+}
+.header2{
+	font-size: 2.5vw;
+	font-family: serif;
+	text-align: center;
+	font-weight: bold;
+	background-image: radial-gradient(red,black,green,yellow);
+	-webkit-background-clip:text ;
+	color: transparent;
+	margin: 0% 10% 1%;
+}
+@keyframes clr{
+	0%{	background-image: radial-gradient(red,yellow,green,magenta,blue);}
+	33%{background-image: radial-gradient(green,magenta,blue,red,yellow);}
+	66%{background-image: radial-gradient(magenta,blue,yellow,green,red);}
+	100%{background-image: radial-gradient(magenta,yellow,blue,red,green);}
+}
+label{
+	text-align: left;
+	position: relative;
+	left: 10px;
+	padding: 5px;
+	margin: 3px;
+	font-weight: bold;
+	font-size: 17px;
+	color: red;
+}
+input,select,button{
+	position: relative;
+	left: 10px;
+	padding: 5px;
+	margin: 3px;
+	width: 80%;
+	border: 0px;
+	border-bottom: 2px solid black;
+	outline: 0px;
+	font-size: 17px;
+	font-family: serif;
+	
+}
+input:focus, select:focus{
+	animation: brdr 1s linear infinite;
+}
+@keyframes brdr{
+	0%{	border: 2px solid red;}
+	10%{	border: 2px solid blue;}
+	30%{	border: 2px solid green;}
+	50%{	border: 2px solid cyan;}
+	75%{	border: 2px solid magenta;}
+	100%{	border: 2px solid teal;}
+	}
+
+button{
+	background-color: lightgreen;
+	border: 2px solid;
+	margin: 10px;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+
+@media screen and (max-width: 700px){
+	#box1,#box2{width: 70%;}
+	.Page_header{font-size: 5vw;}
+	.header{font-size: 7vw;}
+
+}
+
+.footer{
+	margin: 2% 0%;
+	padding: 1%;
+	background: lightgrey;
+	text-align: center;
+}
+.footer span{
+	color: red;
+	font-weight: bold;
+	font-size: 20px;
+}
