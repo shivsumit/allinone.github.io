@@ -26,7 +26,7 @@
 <body>
   <div class="header">
 	<center><div style="font-family:algerian;font-size:40px;font-weight:bold; font-style:italic"> Softech Computer Education, <br> <div style="font-family:serif"> 99 Moti Nagar Unnao </div> </div>
-    <h1 style="font-family:serif">Module: Python Programming and problem solving (Full Module) <span class="timer" id="timer">75:00</span></h1></center>
+    <h1 style="font-family:serif">Module: Python Programming and problem solving (Full Module) <span class="timer" id="timer">60:00 Minutes</span></h1></center>
   </div>
 
   <div class="container">
@@ -171,14 +171,14 @@
     let visited = Array(questions.length).fill(false);
     let marked = Array(questions.length).fill(false);
     let timer;
-    let timeLeft = 1 * 60;
+    let timeLeft = 60 * 60;
 
     function startTest() {
       const name = document.getElementById("studentName").value.trim();
       if (!name) return alert("Please enter your name to start the test.");
       document.getElementById("studentForm").classList.add("hidden");
       document.getElementById("quizBox").classList.remove("hidden");
-      document.querySelector(".header h1").innerHTML += ` - ${name}`;
+      document.querySelector(".header h1").innerHTML += `Name : - ${name}`;
       document.getElementById("totalQ").innerText = questions.length;
       generatePagination();
       loadQuestion();
