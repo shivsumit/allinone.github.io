@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Test - Chemical Reactions & Equations</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .header, .footer { background: #004080; color: white; padding: 10px 20px; }
+    .header h1 { margin: 0; font-size: 20px; }
+    .container { padding: 20px; }
+    .question-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .options label { display: block; margin: 5px 0; }
+    .navigation-buttons { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .dashboard { margin-top: 20px; background: #e0e0e0; padding: 15px; border-radius: 10px; }
+    .summary { display: none; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .timer { float: right; font-weight: bold; }
+    .hidden { display: none; }
+    .pagination { margin: 10px 0; display: flex; flex-wrap: wrap; gap: 5px; }
+    .pagination button { padding: 5px 10px; border: none; border-radius: 5px; background: #004080; color: white; cursor: pointer; }
+    .pagination .marked { background: orange; }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Chapter: Chemical Reactions & Equations <span class="timer" id="timer">75:00</span></h1>
+  </div>
+
+  <div class="container">
+    <div id="studentForm">
+      <label for="studentName">Enter Your Name:</label>
+      <input type="text" id="studentName" required>
+      <button onclick="startTest()">Start Test</button>
+    </div>
+
+    <div id="quizBox" class="hidden">
+      <div id="questionContainer" class="question-box"></div>
+      <div class="navigation-buttons">
+        <button onclick="prevQuestion()">Previous</button>
+        <button onclick="nextQuestion()">Next</button>
+        <button onclick="toggleMarkReview()">Mark for Review</button>
+      </div>
+      <div class="pagination" id="pagination"></div>
+      <div class="dashboard">
+        <p>Total Questions: <span id="totalQ"></span></p>
+        <p>Attempted: <span id="attempted"></span> | Visited: <span id="visited"></span> | Not Visited: <span id="notVisited"></span></p>
+        <button onclick="submitQuiz()">Submit Test</button>
+      </div>
+    </div>
+
+    <div id="resultBox" class="summary"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "In the reaction: 2H₂ + O₂ → 2H₂O, the ratio of hydrogen to oxygen by volume is:", options: ["1:1", "2:1", "1:2", "1:8"], answer: 1 },
+      { q: "Which of the following is a displacement reaction?", options: ["2H₂O → 2H₂ + O₂", "Zn + CuSO₄ → ZnSO₄ + Cu", "CaCO₃ → CaO + CO₂", "NaOH + HCl → NaCl + H₂O"], answer: 1 },
+      { q: "The reaction 2KClO₃ → 2KCl + 3O₂ is an example of:", options: ["Combination reaction", "Decomposition reaction", "Displacement reaction", "Double displacement reaction"], answer: 1 },
+      { q: "In a redox reaction, the substance that undergoes oxidation:", options: ["Gains electrons", "Loses electrons", "Gains protons", "Loses protons"], answer: 1 },
+      { q: "Which of the following is not a balanced chemical equation?", options: ["N₂ + 3H₂ → 2NH₃", "2Fe + 3H₂O → Fe₂O₃ + 3H₂", "2Mg + O₂ → 2MgO", "2Al + Fe₂O₃ → Al₂O₃ + 2Fe"], answer: 1 },
+      // ADD THE REMAINING 45 QUESTIONS FROM YOUR PREVIOUS FILE HERE (omitted for brevity)
+{ q: "The reaction Pb(NOâ‚ƒ)â‚‚ + 2KI â†’ PbIâ‚‚ + 2KNOâ‚ƒ is a:", options: ["Combination reaction", "Decomposition reaction", "Displacement reaction", "Double displacement reaction"], answer: 3 },
+      { q: "Which of the following reactions is endothermic?", options: ["Burning of methane", "Respiration", "Photosynthesis", "Rusting of iron"], answer: 2 },
+      { q: "The reaction 2AgCl â†’ 2Ag + Clâ‚‚ is an example of:", options: ["Photochemical decomposition", "Electrolysis", "Thermal decomposition", "Displacement reaction"], answer: 0 },
+      { q: "In the reaction Feâ‚‚Oâ‚ƒ + 2Al â†’ Alâ‚‚Oâ‚ƒ + 2Fe, the reducing agent is:", options: ["Feâ‚‚Oâ‚ƒ", "Al", "Alâ‚‚Oâ‚ƒ", "Fe"], answer: 1 },
+      { q: "Which of the following reactions represents combustion?", options: ["C + Oâ‚‚ â†’ COâ‚‚", "CaO + Hâ‚‚O â†’ Ca(OH)â‚‚", "Zn + Hâ‚‚SOâ‚„ â†’ ZnSOâ‚„ + Hâ‚‚", "AgNOâ‚ƒ + NaCl â†’ AgCl + NaNOâ‚ƒ"], answer: 0 },
+      { q: "The balanced equation for aluminium and HCl is:", options: ["Al + HCl â†’ AlClâ‚ƒ + Hâ‚‚", "2Al + 6HCl â†’ 2AlClâ‚ƒ + 3Hâ‚‚", "Al + 3HCl â†’ AlClâ‚ƒ + Hâ‚‚", "Al + 2HCl â†’ AlClâ‚‚ + Hâ‚‚"], answer: 1 },
+      { q: "Number of oxygen atoms in 2Mg + Oâ‚‚ â†’ 2MgO:", options: ["2", "4", "6", "8"], answer: 0 },
+      { q: "Which equation is incorrectly balanced?", options: ["2Hâ‚‚ + Oâ‚‚ â†’ 2Hâ‚‚O", "2Na + 2Hâ‚‚O â†’ 2NaOH + Hâ‚‚", "CHâ‚„ + 2Oâ‚‚ â†’ COâ‚‚ + Hâ‚‚O", "Fe + CuSOâ‚„ â†’ FeSOâ‚„ + Cu"], answer: 2 },
+      { q: "Coefficient of Oâ‚‚ in Câ‚ƒHâ‚ˆ + Oâ‚‚ â†’ COâ‚‚ + Hâ‚‚O:", options: ["3", "5", "7", "9"], answer: 1 },
+      { q: "Balanced equation for Na and Hâ‚‚O:", options: ["Na + Hâ‚‚O â†’ NaOH + Hâ‚‚", "2Na + 2Hâ‚‚O â†’ 2NaOH + Hâ‚‚", "Na + 2Hâ‚‚O â†’ NaOH + Hâ‚‚", "2Na + Hâ‚‚O â†’ Naâ‚‚O + Hâ‚‚"], answer: 1 },
+      { q: "In CuO + Hâ‚‚ â†’ Cu + Hâ‚‚O, oxidized substance:", options: ["CuO", "Hâ‚‚", "Cu", "Hâ‚‚O"], answer: 1 },
+      { q: "Which of these is a reducing agent?", options: ["Oâ‚‚", "Hâ‚‚", "Clâ‚‚", "COâ‚‚"], answer: 1 },
+      { q: "Oxidation state of sulfur in Hâ‚‚SOâ‚„:", options: ["+2", "+4", "+6", "-2"], answer: 2 },
+      { q: "In 2Pb(NOâ‚ƒ)â‚‚ â†’ 2PbO + 4NOâ‚‚ + Oâ‚‚, reduced substance:", options: ["Pb(NOâ‚ƒ)â‚‚", "PbO", "NOâ‚‚", "Oâ‚‚"], answer: 0 },
+      { q: "Which involves both oxidation & reduction?", options: ["NaOH + HCl", "Zn + CuSOâ‚„", "CaCOâ‚ƒ â†’ CaO + COâ‚‚", "AgNOâ‚ƒ + NaCl"], answer: 1 },
+      { q: "Formula of rust:", options: ["FeO", "Feâ‚‚Oâ‚ƒÂ·xHâ‚‚O", "Feâ‚ƒOâ‚„", "FeCOâ‚ƒ"], answer: 1 },
+      { q: "Which does not prevent rusting?", options: ["Galvanization", "Alloying", "Lubrication", "Hydration"], answer: 3 },
+      { q: "Rancidity can be prevented by:", options: ["Oxidation", "Adding antioxidants", "Increasing moisture", "Exposure to air"], answer: 1 },
+      { q: "Zinc coating on iron is called:", options: ["Alloying", "Galvanization", "Vulcanization", "Reduction"], answer: 1 },
+      { q: "Gas responsible for rancidity:", options: ["Nitrogen", "Oxygen", "Hydrogen", "COâ‚‚"], answer: 1 },
+      { q: "AgNOâ‚ƒ reacts with what to give white ppt?", options: ["NaCl", "KNOâ‚ƒ", "CaCOâ‚ƒ", "MgSOâ‚„"], answer: 0 },
+      { q: "NaOH + HCl â†’ NaCl + Hâ‚‚O is:", options: ["Redox", "Neutralization", "Displacement", "Decomposition"], answer: 1 },
+      { q: "Which is not neutralization?", options: ["Hâ‚‚SOâ‚„ + KOH", "HNOâ‚ƒ + NaOH", "CaCOâ‚ƒ + HCl", "CHâ‚ƒCOOH + NaOH"], answer: 2 },
+      { q: "In BaClâ‚‚ + Naâ‚‚SOâ‚„ â†’ BaSOâ‚„ + 2NaCl, ppt is:", options: ["BaClâ‚‚", "Naâ‚‚SOâ‚„", "BaSOâ‚„", "NaCl"], answer: 2 },
+      { q: "pH of neutral solution:", options: ["0", "7", "10", "14"], answer: 1 },
+      { q: "Mg burns to form:", options: ["MgCOâ‚ƒ", "MgO", "Mg(OH)â‚‚", "MgClâ‚‚"], answer: 1 },
+      { q: "HCl + Naâ‚‚COâ‚ƒ gives which gas?", options: ["Hâ‚‚", "Oâ‚‚", "COâ‚‚", "Clâ‚‚"], answer: 2 },
+      { q: "Which gives Hâ‚‚ gas?", options: ["Cu + Hâ‚‚SOâ‚„", "Zn + Hâ‚‚SOâ‚„", "Ag + HCl", "Na + COâ‚‚"], answer: 1 },
+      { q: "CuSOâ‚„ color after heating:", options: ["Blue â†’ White", "Green â†’ Black", "White â†’ Blue", "Red â†’ Brown"], answer: 0 },
+      { q: "Black coating on silver:", options: ["2Ag + Hâ‚‚S â†’ Agâ‚‚S + Hâ‚‚", "Ag + Oâ‚‚", "Ag + COâ‚‚", "Ag + HCl"], answer: 0 },
+      { q: "Hâ‚‚O coefficient in glucose reaction:", options: ["4", "6", "8", "10"], answer: 1 },
+      { q: "Oâ‚‚ required for 12g Mg:", options: ["8g", "16g", "32g", "4g"], answer: 0 },
+      { q: "Hâ‚‚ to Oâ‚‚ ratio in water electrolysis:", options: ["1:1", "2:1", "1:8", "1:2"], answer: 1 },
+      { q: "Oxygen atoms in Alâ‚‚(SOâ‚„)â‚ƒ:", options: ["4", "7", "12", "24"], answer: 2 },
+      { q: "Fe + steam product:", options: ["FeO", "Feâ‚‚Oâ‚ƒ", "Feâ‚ƒOâ‚„", "Fe(OH)â‚‚"], answer: 2 },
+      { q: "Respiration is exothermic bcz:", options: ["Both true & explains", "Both true but not explains", "A true R false", "A false R true"], answer: 0 },
+      { q: "Equation must be balanced bcz:", options: ["Both true & explains", "Both true but not explains", "A true R false", "A false R true"], answer: 0 },
+      { q: "Photosynthesis is redox bcz:", options: ["Both true & explains", "Both true but not explains", "A true R false", "A false R true"], answer: 0 },
+      { q: "Zn displaces Cu bcz:", options: ["Both true & explains", "Both true but not explains", "A true R false", "A false R true"], answer: 0 },
+      { q: "Pb(NOâ‚ƒ)â‚‚ gives yellow residue bcz:", options: ["Both true & explains", "Both true but not explains", "A true R false", "A false R true"], answer: 1 },
+      { q: "Fe + CuSOâ‚„ observation:", options: ["Blue to green", "Brown deposit", "Both", "No reaction"], answer: 2 },
+      { q: "Marble + HCl gas evolved:", options: ["Hydrogen", "Oxygen", "COâ‚‚", "Chlorine"], answer: 2 },
+      { q: "Whitewash reaction:", options: ["CaO + Hâ‚‚O", "Ca(OH)â‚‚ + COâ‚‚", "Both", "None"], answer: 2 },
+      { q: "X used in crackers is:", options: ["KNOâ‚ƒ", "KClOâ‚ƒ", "KMnOâ‚„", "Kâ‚‚Crâ‚‚Oâ‚‡"], answer: 1 },
+      { q: "Most reactive metal:", options: ["Cu", "Ag", "K", "Au"], answer: 2 }    
+];
+
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+    let visited = Array(questions.length).fill(false);
+    let marked = Array(questions.length).fill(false);
+    let timer;
+    let timeLeft = 75 * 60;
+
+    function startTest() {
+      const name = document.getElementById("studentName").value.trim();
+      if (!name) return alert("Please enter your name to start the test.");
+      document.getElementById("studentForm").classList.add("hidden");
+      document.getElementById("quizBox").classList.remove("hidden");
+      document.querySelector(".header h1").innerHTML += ` - ${name}`;
+      document.getElementById("totalQ").innerText = questions.length;
+      generatePagination();
+      loadQuestion();
+      updateStats();
+      startTimer();
+    }
+
+    function loadQuestion(index = current) {
+      current = index;
+      visited[current] = true;
+      const q = questions[current];
+      const box = document.getElementById("questionContainer");
+      box.innerHTML = `<h3>Q${current + 1}. ${q.q}</h3><div class='options'>` +
+        q.options.map((opt, i) => `
+          <label><input type="radio" name="q${current}" ${answers[current] === i ? "checked" : ""} onclick="selectOption(${i})"> ${opt}</label>
+        `).join('') + '</div>';
+      highlightPagination();
+      updateStats();
+    }
+
+    function selectOption(index) {
+      answers[current] = index;
+      updateStats();
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) loadQuestion(current + 1);
+    }
+
+    function prevQuestion() {
+      if (current > 0) loadQuestion(current - 1);
+    }
+
+    function toggleMarkReview() {
+      marked[current] = !marked[current];
+      highlightPagination();
+    }
+
+    function generatePagination() {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = '';
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i + 1;
+        btn.onclick = () => loadQuestion(i);
+        btn.id = `qbtn${i}`;
+        pagination.appendChild(btn);
+      }
+    }
+
+    function highlightPagination() {
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.getElementById(`qbtn${i}`);
+        btn.className = '';
+        if (marked[i]) btn.classList.add("marked");
+      }
+    }
+
+    function updateStats() {
+      const attempted = answers.filter(a => a !== null).length;
+      const visitedCount = visited.filter(v => v).length;
+      document.getElementById("attempted").innerText = attempted;
+      document.getElementById("visited").innerText = visitedCount;
+      document.getElementById("notVisited").innerText = questions.length - visitedCount;
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+          return;
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        timeLeft--;
+      }, 1000);
+    }
+
+    function submitQuiz() {
+      clearInterval(timer);
+      document.getElementById("quizBox").classList.add("hidden");
+      let score = 0;
+      let output = '';
+      questions.forEach((q, i) => {
+        const correct = q.answer;
+        const chosen = answers[i];
+        const status = (chosen === correct) ? '✅' : '❌';
+        if (chosen === correct) score++;
+
+        output += `<div class='question-box'>
+          <h3>Q${i + 1}. ${q.q}</h3>
+          <div class='options'>` + q.options.map((opt, j) => {
+            const isCorrect = (j === correct);
+            const isSelected = (j === chosen);
+            let cls = '';
+            if (isSelected && isCorrect) cls = 'correct';
+            else if (isSelected && !isCorrect) cls = 'incorrect';
+            else if (isCorrect) cls = 'correct';
+            return `<label class='${cls}'>${opt}</label>`;
+          }).join('') + `</div><p><strong>${status}</strong></p></div>`;
+      });
+
+      const percent = ((score / questions.length) * 100).toFixed(2);
+      const name = document.getElementById("studentName").value;
+      document.getElementById("resultBox").innerHTML = `
+        <h2>Result Summary for ${name}</h2>
+        <p><strong>Total Questions:</strong> ${questions.length}</p>
+        <p><strong>Attempted:</strong> ${answers.filter(a => a !== null).length}</p>
+        <p><strong>Correct Answers:</strong> ${score}</p>
+        <p><strong>Percentage:</strong> ${percent}%</p><hr>` + output;
+      document.getElementById("resultBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>
