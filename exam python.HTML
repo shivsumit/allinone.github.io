@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Test - Chemical Reactions & Equations</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .header, .footer { background: #004080; color: white; padding: 10px 20px; }
+    .header h1 { margin: 0; font-size: 20px; }
+    .container { padding: 20px; }
+    .question-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .options label { display: block; margin: 5px 0; }
+    .navigation-buttons { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .dashboard { margin-top: 20px; background: #e0e0e0; padding: 15px; border-radius: 10px; }
+    .summary { display: none; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .timer { float: right; font-weight: bold; }
+    .hidden { display: none; }
+    .pagination { margin: 10px 0; display: flex; flex-wrap: wrap; gap: 5px; }
+    .pagination button { padding: 5px 10px; border: none; border-radius: 5px; background: #004080; color: white; cursor: pointer; }
+    .pagination .marked { background: orange; }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <div class="header">
+	<center><div style="font-family:algerian;font-size:40px;font-weight:bold; font-style:italic"> Softech Computer Education, <br> <div style="font-family:serif"> 99 Moti Nagar Unnao </div> </div>
+    <h1 style="font-family:serif">Module: Python Programming and problem solving (Full Module) <span class="timer" id="timer">75:00</span></h1></center>
+  </div>
+
+  <div class="container">
+    <div id="studentForm">
+      <label for="studentName">Enter Your Name:</label>
+      <input type="text" id="studentName" required>
+      <button onclick="startTest()">Start Test</button>
+    </div>
+
+    <div id="quizBox" class="hidden">
+      <div id="questionContainer" class="question-box"></div>
+      <div class="navigation-buttons">
+        <button onclick="prevQuestion()">Previous</button>
+        <button onclick="nextQuestion()">Next</button>
+        <button onclick="toggleMarkReview()">Mark for Review</button>
+      </div>
+      <div class="pagination" id="pagination"></div>
+      <div class="dashboard">
+        <p>Total Questions: <span id="totalQ"></span></p>
+        <p>Attempted: <span id="attempted"></span> | Visited: <span id="visited"></span> | Not Visited: <span id="notVisited"></span></p>
+        <button onclick="submitQuiz()">Submit Test</button>
+      </div>
+    </div>
+
+    <div id="resultBox" class="summary"></div>
+  </div>
+
+  <script>
+    const questions = [
+  { q: "Which of the following is a programming language?", options: ["HTML", "Python", "MS Word", "Google"], answer: 1 },
+  { q: "A program is:", options: ["A video game", "A hardware device", "A sequence of instructions", "An operating system"], answer: 2 },
+  { q: "The main goal of programming is to:", options: ["Enter data", "Solve problems", "Type faster", "Play games"], answer: 1 },
+  { q: "Which of these is a low-level programming language?", options: ["Python", "Java", "Assembly", "C++"], answer: 2 },
+  { q: "What converts human-readable code to machine code?", options: ["RAM", "Monitor", "Compiler/Interpreter", "Hard disk"], answer: 2 },
+  { q: "Which of these is NOT a feature of high-level languages?", options: ["Easy to read", "Machine independent", "Fast to execute like machine code", "Easier debugging"], answer: 2 },
+  { q: "Which component processes the instructions of a program?", options: ["CPU", "Mouse", "Monitor", "Keyboard"], answer: 0 },
+  { q: "What is debugging?", options: ["Deleting files", "Finding errors in code", "Installing software", "Writing new software"], answer: 1 },
+  { q: "Machine code consists of:", options: ["English statements", "Binary numbers", "Pseudo code", "Assembly lines"], answer: 1 },
+  { q: "A software is:", options: ["Physical parts of a computer", "A computer virus", "A set of instructions that runs on hardware", "A user manual"], answer: 2 },
+
+  { q: "What is an algorithm?", options: ["A flowchart", "A step-by-step solution to a problem", "A graph", "A drawing"], answer: 1 },
+  { q: "Flowchart uses which symbols to represent operations?", options: ["Circles", "Blocks and arrows", "Graphs", "Pie charts"], answer: 1 },
+  { q: "Which symbol represents a decision in a flowchart?", options: ["Rectangle", "Oval", "Diamond", "Circle"], answer: 2 },
+  { q: "Which is a benefit of using algorithms?", options: ["Faster typing", "Easier to plan a program", "Draw beautiful pictures", "Avoid logic"], answer: 1 },
+  { q: "What is the first step in algorithm writing?", options: ["Write code", "Understand the problem", "Use Python", "Draw flowchart"], answer: 1 },
+  { q: "Which symbol is used to start/end a flowchart?", options: ["Rectangle", "Circle", "Parallelogram", "Oval"], answer: 3 },
+  { q: "A good algorithm should be:", options: ["Long", "Ambiguous", "Precise and correct", "Complicated"], answer: 2 },
+  { q: "Flowcharts help to:", options: ["Decorate program", "Write essays", "Visually understand logic", "Skip coding"], answer: 2 },
+  { q: "What symbol is used to take input/output in a flowchart?", options: ["Rectangle", "Diamond", "Parallelogram", "Oval"], answer: 2 },
+  { q: "A decision box always has:", options: ["One output", "Two outputs (Yes/No)", "No output", "Four outputs"], answer: 1 },
+
+  { q: "Python was developed by:", options: ["Bill Gates", "Dennis Ritchie", "Guido van Rossum", "Mark Zuckerberg"], answer: 2 },
+  { q: "What type of programming language is Python?", options: ["Low-level", "High-level", "Machine-level", "Binary"], answer: 1 },
+  { q: "Which symbol is used to comment a single line in Python?", options: ["//", "/* */", "<!-- -->", "#"], answer: 3 },
+  { q: "Which of the following is the correct extension for Python files?", options: [".java", ".py", ".txt", ".cpp"], answer: 1 },
+  { q: "What will print(2 + 3 * 4) output in Python?", options: ["20", "14", "24", "9"], answer: 1 },
+  { q: "Which function is used to display output in Python?", options: ["echo()", "printf()", "show()", "print()"], answer: 3 },
+  { q: "What does the input() function do?", options: ["Outputs text", "Takes user input", "Closes a file", "Ends a program"], answer: 1 },
+  { q: "Which of the following is not a keyword in Python?", options: ["while", "for", "loop", "if"], answer: 2 },
+  { q: "Which of the following is used to define a block of code in Python?", options: ["Curly braces {}", "Semicolon", "Indentation", "Parentheses ()"], answer: 2 },
+  { q: "Python is:", options: ["Case-insensitive", "Only for web development", "Case-sensitive", "Only for machine learning"], answer: 2 },
+  { q: "What will be the output of: print(10 // 3)?", options: ["3.33", "3", "4", "Error"], answer: 1 },
+  { q: "Which of the following is a logical operator in Python?", options: ["+", "*", "and", "="], answer: 2 },
+  { q: "What is the result of 4 ** 2 in Python?", options: ["6", "8", "16", "2"], answer: 2 },
+  { q: "Which of the following is an assignment operator?", options: ["==", "=", "!=", "and"], answer: 1 },
+  { q: "What does the expression x += 2 mean?", options: ["x = x - 2", "x = x + 2", "x = 2", "x = x * 2"], answer: 1 },
+  { q: "Which operator is used for modulus?", options: ["%", "/", "//", "**"], answer: 0 },
+  { q: "Which statement correctly compares two values?", options: ["x = 5", "if x == 5:", "if x = 5:", "print x"], answer: 1 },
+  { q: "Which is not a type of operator in Python?", options: ["Arithmetic", "Logical", "Increment", "Comparison"], answer: 2 },
+  { q: "What is the precedence order in Python?", options: ["Left to right always", "Parentheses > Exponents > Multiplication/Division > Addition/Subtraction", "Random", "Equal"], answer: 1 },
+  { q: "Which operator checks if two values are not equal?", options: ["==", "!==", "!=", "=!"], answer: 2 },
+
+  { q: "Which of the following is a mutable sequence data type in Python?", options: ["string", "tuple", "list", "int"], answer: 2 },
+  { q: "How do you create a tuple in Python?", options: ["Using square brackets []", "Using curly braces {}", "Using parentheses ()", "Using quotes \"\""], answer: 2 },
+  { q: "Which of the following is immutable?", options: ["list", "dictionary", "tuple", "set"], answer: 2 },
+  { q: "What will len(\"Python\") return?", options: ["5", "6", "7", "Error"], answer: 1 },
+  { q: "Which method adds an item at the end of a list?", options: ["insert()", "append()", "extend()", "push()"], answer: 1 },
+  { q: "What is the output of my_list[1] if my_list = [10, 20, 30]?", options: ["10", "20", "30", "Error"], answer: 1 },
+  { q: "Which of the following data types supports slicing?", options: ["list", "string", "tuple", "All of the above"], answer: 3 },
+  { q: "What does my_list.pop() do?", options: ["Removes the first item", "Removes the last item", "Adds an item", "Returns the length"], answer: 1 },
+  { q: "Which operator is used to repeat a list?", options: ["+", "*", "/", "%"], answer: 1 },
+  { q: "Which of the following is a string method?", options: ["upper()", "pop()", "append()", "insert()"], answer: 0 },
+
+  { q: "What is a function in Python?", options: ["A loop", "A variable", "A block of code that performs a specific task", "An operator"], answer: 2 },
+  { q: "Which keyword is used to define a function in Python?", options: ["define", "def", "func", "function"], answer: 1 },
+  { q: "What is the output of: def add(x, y): return x + y; print(add(3, 4))", options: ["34", "7", "x + y", "Error"], answer: 1 },
+  { q: "A function that does not return any value returns:", options: ["0", "False", "None", "Null"], answer: 2 },
+  { q: "What are function parameters?", options: ["Output values", "Values inside loops", "Variables listed inside parentheses during function definition", "Keywords"], answer: 2 },
+  { q: "What is the correct syntax for calling a function named hello()?", options: ["call hello()", "hello", "hello()", "function hello"], answer: 2 },
+  { q: "Which of the following is a built-in Python function?", options: ["sum()", "add()", "power()", "increase()"], answer: 0 },
+  { q: "What is a recursive function?", options: ["A function that calls another function", "A function that returns a string", "A function that calls itself", "A function that repeats a string"], answer: 2 },
+  { q: "What is the purpose of the return statement?", options: ["To end the program", "To print the output", "To return a value from the function", "To take input"], answer: 2 },
+  { q: "What will the following code output: def greet(): print('Hello'); result = greet(); print(result)", options: ["Hello", "Hello None", "None Hello", "Error"], answer: 1 },
+
+  { q: "Which function is used to open a file in Python?", options: ["openfile()", "readfile()", "file()", "open()"], answer: 3 },
+  { q: "What does the mode 'r' mean while opening a file?", options: ["Write mode", "Read mode", "Append mode", "Rename mode"], answer: 1 },
+  { q: "What will file.read() do?", options: ["Write content to a file", "Read the entire file content", "Close the file", "Read only the first line"], answer: 1 },
+  { q: "Which method is used to write to a file?", options: ["input()", "fileinput()", "write()", "writeline()"], answer: 2 },
+  { q: "What does the 'a' mode do?", options: ["Adds content from the beginning", "Deletes file", "Appends content at the end", "Reads and prints file"], answer: 2 },
+  { q: "Which of the following is used to close a file in Python?", options: ["stop()", "end()", "close()", "exit()"], answer: 2 },
+  { q: "Which mode is used for both reading and writing?", options: ["r+", "w+", "a+", "All of the above"], answer: 3 },
+  { q: "If the file does not exist, which mode will create a new file?", options: ["'r'", "'w'", "'x'", "Both (b) and (c)"], answer: 3 },
+  { q: "What does readline() return?", options: ["A list of all lines", "A single line as a string", "A word", "A character"], answer: 1 },
+  { q: "Which statement is best practice for file handling?", options: ["Always use file.close()", "Use with open() to manage files", "Never close the file", "Only use write() method"], answer: 1 },
+  { q: "What is a module in Python?", options: ["A text file", "A hardware device", "A file containing Python definitions and functions", "An in-built keyword"], answer: 2 },
+  { q: "Which keyword is used to import a module in Python?", options: ["include", "import", "module", "using"], answer: 1 },
+  { q: "What is the output of: import math; print(math.sqrt(16))", options: ["4.0", "8", "16", "Error"], answer: 0 },
+  { q: "How do you import only the pi constant from the math module?", options: ["import math.pi", "include pi", "from math import pi", "import pi from math"], answer: 2 },
+  { q: "Which of the following is a built-in Python module?", options: ["os", "excel", "html5", "pandas"], answer: 0 },
+  { q: "What is the file extension of a Python module?", options: [".txt", ".mod", ".py", ".exe"], answer: 2 },
+  { q: "What does dir(module_name) return?", options: ["The module’s location", "A list of names defined in the module", "The module’s version", "The function’s output"], answer: 1 },
+  { q: "Which module is used to interact with the operating system?", options: ["sys", "os", "random", "re"], answer: 1 },
+  { q: "Which of the following is used to generate random numbers?", options: ["math", "time", "random", "os"], answer: 2 },
+  { q: "What will from math import * do?", options: ["Import only the main function", "Import the square root function only", "Import all functions from the math module", "Throw an error"], answer: 2 },
+
+  { q: "What does NumPy stand for?", options: ["Numerical Python", "Number Program", "Numeric Programming", "None of the above"], answer: 0 },
+  { q: "What is the primary object in NumPy?", options: ["List", "Tuple", "Array", "Dictionary"], answer: 2 },
+  { q: "Which function is used to create a NumPy array?", options: ["array()", "ndarray()", "list()", "np_list()"], answer: 0 },
+  { q: "Which of the following will import NumPy correctly?", options: ["import NumPy", "include numpy", "import numpy as np", "using NumPy"], answer: 2 },
+  { q: "What does np.zeros((2,3)) create?", options: ["A 2x3 array filled with zeros", "An empty array", "A list with 6 elements", "A 3x2 array of ones"], answer: 0 },
+  { q: "Which of the following will give the shape of a NumPy array arr?", options: ["arr.shape()", "arr.size()", "arr.shape", "shape(arr)"], answer: 2 },
+  { q: "What is the output of np.arange(0, 10, 2)?", options: ["[0 2 4 6 8 10]", "[0 2 4 6 8]", "[2 4 6 8]", "[0 1 2 3 4 5]"], answer: 1 },
+  { q: "Which of these functions returns a random number array?", options: ["np.random.rand(2,2)", "np.ones((2,2))", "np.array([1,2])", "np.zeros((2,2))"], answer: 0 },
+  { q: "What is the difference between np.array([1,2,3]) and a Python list [1,2,3]?", options: ["No difference", "NumPy arrays are slower", "NumPy arrays support vectorized operations", "Lists store only strings"], answer: 2 },
+  { q: "Which function is used to get the number of elements in a NumPy array?", options: ["len()", "arr.size", "arr.length()", "size(arr)"], answer: 1 },
+
+
+  { q: "Which of the following will correctly define a function in Python?", options: ["function add(x, y):", "def add(x, y):", "add(x, y) =>", "func add(x, y):"], answer: 1 },
+  { q: "In Python, what will type([1, 2, 3]) return?", options: ["<class 'tuple'>", "<class 'list'>", "<class 'array'>", "<class 'set'>"], answer: 1 },
+  { q: "What is the output of print(2 < 3 and 3 > 1)?", options: ["False", "1", "True", "0"], answer: 2 },
+  { q: "What does with open(\"file.txt\", \"r\") as f: do?", options: ["Opens file for writing", "Opens file for appending", "Opens file for reading and auto-closes it", "Opens file forever"], answer: 2 },
+  { q: "What is the output of: import numpy as np; arr = np.array([[1,2],[3,4]]); print(arr.shape)", options: ["(4,)", "(2, 2)", "(1, 4)", "Error"], answer: 1 },
+  { q: "Which flowchart symbol is used to take user input?", options: ["Rectangle", "Diamond", "Parallelogram", "Circle"], answer: 2 },
+  { q: "What will print(\"hello\" * 3) output?", options: ["hello3", "hello hello hello", "hellohellohello", "3hello"], answer: 2 },
+  { q: "Which method would insert an item at a specific index in a list?", options: ["insert()", "append()", "add()", "put()"], answer: 0 },
+  { q: "Which module is commonly used for random number generation in Python?", options: ["math", "random", "os", "numpy"], answer: 1 },
+  { q: "What will be the result of this Python expression: \"5\" + \"6\"", options: ["11", "56", "Error", "5 + 6"], answer: 1 },    
+];
+
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+    let visited = Array(questions.length).fill(false);
+    let marked = Array(questions.length).fill(false);
+    let timer;
+    let timeLeft = 1 * 60;
+
+    function startTest() {
+      const name = document.getElementById("studentName").value.trim();
+      if (!name) return alert("Please enter your name to start the test.");
+      document.getElementById("studentForm").classList.add("hidden");
+      document.getElementById("quizBox").classList.remove("hidden");
+      document.querySelector(".header h1").innerHTML += ` - ${name}`;
+      document.getElementById("totalQ").innerText = questions.length;
+      generatePagination();
+      loadQuestion();
+      updateStats();
+      startTimer();
+    }
+
+    function loadQuestion(index = current) {
+      current = index;
+      visited[current] = true;
+      const q = questions[current];
+      const box = document.getElementById("questionContainer");
+      box.innerHTML = `<h3>Q${current + 1}. ${q.q}</h3><div class='options'>` +
+        q.options.map((opt, i) => `
+          <label><input type="radio" name="q${current}" ${answers[current] === i ? "checked" : ""} onclick="selectOption(${i})"> ${opt}</label>
+        `).join('') + '</div>';
+      highlightPagination();
+      updateStats();
+    }
+
+    function selectOption(index) {
+      answers[current] = index;
+      updateStats();
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) loadQuestion(current + 1);
+    }
+
+    function prevQuestion() {
+      if (current > 0) loadQuestion(current - 1);
+    }
+
+    function toggleMarkReview() {
+      marked[current] = !marked[current];
+      highlightPagination();
+    }
+
+    function generatePagination() {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = '';
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i + 1;
+        btn.onclick = () => loadQuestion(i);
+        btn.id = `qbtn${i}`;
+        pagination.appendChild(btn);
+      }
+    }
+
+    function highlightPagination() {
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.getElementById(`qbtn${i}`);
+        btn.className = '';
+        if (marked[i]) btn.classList.add("marked");
+      }
+    }
+
+    function updateStats() {
+      const attempted = answers.filter(a => a !== null).length;
+      const visitedCount = visited.filter(v => v).length;
+      document.getElementById("attempted").innerText = attempted;
+      document.getElementById("visited").innerText = visitedCount;
+      document.getElementById("notVisited").innerText = questions.length - visitedCount;
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+          return;
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        timeLeft--;
+      }, 1000);
+    }
+
+    function submitQuiz() {
+      clearInterval(timer);
+      document.getElementById("quizBox").classList.add("hidden");
+      let score = 0;
+      let output = '';
+      questions.forEach((q, i) => {
+        const correct = q.answer;
+        const chosen = answers[i];
+        const status = (chosen === correct) ? '✅' : '❌';
+        if (chosen === correct) score++;
+
+        output += `<div class='question-box'>
+          <h3>Q${i + 1}. ${q.q}</h3>
+          <div class='options'>` + q.options.map((opt, j) => {
+            const isCorrect = (j === correct);
+            const isSelected = (j === chosen);
+            let cls = '';
+            if (isSelected && isCorrect) cls = 'correct';
+            else if (isSelected && !isCorrect) cls = 'incorrect';
+            else if (isCorrect) cls = 'correct';
+            return `<label class='${cls}'>${opt}</label>`;
+          }).join('') + `</div><p><strong>${status}</strong></p></div>`;
+      });
+
+      const percent = ((score / questions.length) * 100).toFixed(2);
+      const name = document.getElementById("studentName").value;
+      document.getElementById("resultBox").innerHTML = `
+        <h2>Result Summary for ${name}</h2>
+        <p><strong>Total Questions:</strong> ${questions.length}</p>
+        <p><strong>Attempted:</strong> ${answers.filter(a => a !== null).length}</p>
+        <p><strong>Correct Answers:</strong> ${score}</p>
+        <p><strong>Percentage:</strong> ${percent}%</p><hr>` + output;
+      document.getElementById("resultBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>
