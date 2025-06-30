@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Test - Chemical Reactions & Equations</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .header, .footer { background: #004080; color: white; padding: 10px 20px; }
+    .header h1 { margin: 0; font-size: 20px; color:Red; background:White; font-family:Serif}
+    .container { padding: 20px; }
+    .question-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .options label { display: block; margin: 5px 0; }
+    .navigation-buttons { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .dashboard { margin-top: 20px; background: #e0e0e0; padding: 15px; border-radius: 10px; }
+    .summary { display: none; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .timer { float: right; font-weight: bold; }
+    .hidden { display: none; }
+    .pagination { margin: 10px 0; display: flex; flex-wrap: wrap; gap: 5px; }
+    .pagination button { padding: 5px 10px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+    .pagination .marked { background: orange; }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; text-decoration: line-through; }
+.unvisited { background-color: #2196F3; }     /* Blue */
+.visited-unattempted { background-color: #f44336; } /* Red */
+.visited-attempted { background-color: #4CAF50; }   /* Green */
+.marked { background-color: #FFC107 !important; }   /* Yellow */
+
+  </style>
+</head>
+<body>
+  <div class="header">
+	<h1 Align="left"> </h1>
+	<center><div style="font-family:algerian;font-size:40px; font-style:italic"> Softech Computer Education, <br> <div style="font-family:serif"> 99 Moti Nagar Unnao </div> </div>
+    <h2 style="font-family:serif">Module: Internet Of Things (Full Module) <span class="timer" id="timer">60:00 Minutes</span></h2></center>
+  </div>
+
+  <div class="container">
+    <div id="studentForm">
+      <label for="studentName">Enter Your Name:</label>
+      <input type="text" id="studentName" required>
+      <button onclick="startTest()">Start Test</button>
+    </div>
+
+    <div id="quizBox" class="hidden">
+      <div id="questionContainer" class="question-box"></div>
+      <div class="navigation-buttons">
+        <button onclick="prevQuestion()">Previous</button>
+        <button onclick="nextQuestion()">Next</button>
+        <button onclick="toggleMarkReview()">Mark for Review</button>
+      </div>
+      <div class="pagination" id="pagination"></div>
+      <div class="dashboard">
+        <p>Total Questions: <span id="totalQ"></span></p>
+        <p>Attempted: <span id="attempted"></span> | Visited: <span id="visited"></span> | Not Visited: <span id="notVisited"></span></p>
+        <button onclick="submitQuiz()">Submit Test</button>
+      </div>
+    </div>
+
+    <div id="resultBox" class="summary"></div>
+  </div>
+
+  <script>
+    const questions = [
+    { q: "What does IoT stand for?", options: ["Internet of Trends", "Internal of Things", "Internet of Things", "Input of Technology"], answer: 2 },
+  
+  { q: "Which of the following is a common application of IoT?", options: ["Smart Agriculture", "Text Editing", "Email Service", "Web Development"], answer: 0 },
+  
+  { q: "Which device is used in smart homes to control lighting remotely?", options: ["Smart Thermostat", "Smart Bulb", "Smart Fan", "Smart Camera"], answer: 1 },
+
+  { q: "Which of the following protocols is commonly used for low-power IoT communication?", options: ["HTTP", "FTP", "MQTT", "SMTP"], answer: 2 },
+  
+  { q: "Which protocol is used for web communication and is also used in IoT devices?", options: ["SMTP", "HTTPS", "TCP/IP", "CoAP"], answer: 3 },
+  
+  { q: "In IoT, what does the 'smart' in 'smart device' imply?", options: ["It is expensive", "It is wireless", "It can make decisions", "It is automated"], answer: 2 },
+  
+  { q: "Which one of the following is NOT an IoT device?", options: ["Smartwatch", "Wi-Fi Router", "Smart Refrigerator", "Digital Thermometer"], answer: 1 },
+  
+  { q: "What is the role of a sensor in an IoT system?", options: ["Process data", "Store data", "Collect data", "Display data"], answer: 2 },
+  
+  { q: "Which of the following is a wireless communication protocol used in IoT?", options: ["Zigbee", "USB", "Ethernet", "HDMI"], answer: 0 },
+  
+  { q: "What is an actuator in IoT?", options: ["Stores data", "Senses data", "Performs actions", "Connects to Wi-Fi"], answer: 2 },
+  
+  { q: "Which of the following is a key feature of IoT?", options: ["Manual data entry", "Wireless connectivity", "Desktop only use", "Offline processing"], answer: 1 },
+  
+  { q: "Which layer in the IoT communication model deals with data processing and analytics?", options: ["Perception Layer", "Network Layer", "Application Layer", "Business Layer"], answer: 3 },
+  
+  { q: "Which layer in the IoT architecture interacts with physical devices like sensors and actuators?", options: ["Network Layer", "Perception Layer", "Application Layer", "Transport Layer"], answer: 1 },
+  
+  { q: "Which IoT protocol is lightweight and ideal for communication in constrained environments?", options: ["HTTP", "FTP", "MQTT", "DNS"], answer: 2 },
+  
+  { q: "What is the primary function of the Network Layer in the IoT architecture?", options: ["Data visualization", "Data storage", "Data transmission", "Data collection"], answer: 2 },
+  
+  { q: "Which of the following devices is considered a smart health IoT device?", options: ["Smart Speaker", "Fitness Tracker", "Bluetooth Mouse", "Wireless Keyboard"], answer: 1 },
+  
+  { q: "In IoT, what does CoAP stand for?", options: ["Common Application Protocol", "Constrained Application Protocol", "Connected Application Platform", "Communication and Access Protocol"], answer: 1 },
+
+  {
+    "q": "Which of the following is an example of a real-time system with a feedback loop?",
+    "options": ["Washing Machine", "Air Conditioner", "Printer", "Keyboard"],
+    "answer": 1
+  },
+  {
+    "q": "What is the primary role of a thermostat in an air conditioner?",
+    "options": ["Increase temperature", "Monitor and regulate temperature", "Turn off the compressor", "Control fan speed"],
+    "answer": 1
+  },
+  {
+    "q": "In a feedback loop system, what happens after the output is generated?",
+    "options": ["The system shuts down", "The system sends output to input for adjustment", "Nothing happens", "It stores the data"],
+    "answer": 1
+  },
+  {
+    "q": "Which layer in the OSI model corresponds to the Internet layer in TCP/IP?",
+    "options": ["Application", "Network", "Data Link", "Transport"],
+    "answer": 1
+  },
+  {
+    "q": "Which communication model has 7 layers?",
+    "options": ["TCP/IP", "UDP", "Bluetooth", "OSI"],
+    "answer": 3
+  },
+  {
+    "q": "In the OSI model, which layer is responsible for routing?",
+    "options": ["Network", "Transport", "Session", "Presentation"],
+    "answer": 0
+  },
+  {
+    "q": "Which protocol is used for reliable communication over the internet?",
+    "options": ["UDP", "TCP", "FTP", "HTTP"],
+    "answer": 1
+  },
+  {
+    "q": "Which of these is a wired communication method?",
+    "options": ["Wi-Fi", "Bluetooth", "Zigbee", "Ethernet"],
+    "answer": 3
+  },
+  {
+    "q": "Which of the following is not a wireless communication technology?",
+    "options": ["Zigbee", "Wi-Fi", "Bluetooth", "Ethernet"],
+    "answer": 3
+  },
+  {
+    "q": "What is the correct sequence in the process flow of an IoT application?",
+    "options": ["Collect → Process → Connect → Act", "Connect → Collect → Act → Process", "Collect → Connect → Process → Act", "Act → Connect → Collect → Process"],
+    "answer": 2
+  },
+  {
+    "q": "Which device collects data in an IoT system?",
+    "options": ["Router", "Sensor", "Actuator", "Controller"],
+    "answer": 1
+  },
+  {
+    "q": "What is the function of an actuator in an IoT system?",
+    "options": ["To send data", "To collect data", "To store data", "To perform physical actions"],
+    "answer": 3
+  },
+  {
+    "q": "Which of these layers exists in both the OSI and TCP/IP models?",
+    "options": ["Presentation", "Session", "Network", "Transport"],
+    "answer": 3
+  },
+  {
+    "q": "Which mode uses radio frequency for data transmission?",
+    "options": ["Ethernet", "Wi-Fi", "Fiber optic", "USB"],
+    "answer": 1
+  },
+  {
+    "q": "Which of the following is true about TCP/IP?",
+    "options": ["Has 7 layers", "Is older than OSI", "Is a protocol stack", "Is used only in local networks"],
+    "answer": 2
+  },
+  {
+    "q": "In a refrigerator, what does the thermostat do?",
+    "options": ["Controls the light", "Opens the door", "Regulates temperature", "Measures weight"],
+    "answer": 2
+  },
+  {
+    "q": "Which device is used to connect to a wireless network?",
+    "options": ["Switch", "Router", "Hub", "Repeater"],
+    "answer": 1
+  },
+  { q: "Which device is used to detect the intensity of light?", options: ["Temperature sensor", "Light sensor", "Moisture sensor", "Pressure sensor"], answer: 1 },
+  { q: "Which sensor is commonly used to detect soil water content?", options: ["Gas sensor", "Light sensor", "Moisture sensor", "Ultrasonic sensor"], answer: 2 },
+  { q: "What is the main function of a temperature sensor?", options: ["Measure speed", "Measure brightness", "Measure heat levels", "Measure sound"], answer: 2 },
+  { q: "What kind of device is a DC motor?", options: ["Sensor", "Actuator", "Transducer", "Microcontroller"], answer: 1 },
+  { q: "Which of the following is an actuator?", options: ["PIR sensor", "LM35 sensor", "Relay", "Thermistor"], answer: 2 },
+  { q: "Which of the following is NOT a sensor?", options: ["Thermometer", "Moisture detector", "DC motor", "LDR"], answer: 2 },
+  { q: "What does an actuator do?", options: ["Senses environment", "Stores data", "Controls motion or system", "Processes data"], answer: 2 },
+  { q: "Which one is a typical use of a light sensor?", options: ["Controlling fan speed", "Switching street lights automatically", "Measuring soil moisture", "Detecting sound"], answer: 1 },
+  { q: "Which part of an embedded system connects sensors and actuators together?", options: ["CPU", "Controller", "Battery", "Display"], answer: 1 },
+  { q: "Which of the following best describes a microcontroller?", options: ["A standalone computer", "A small computer on a single chip", "Only a storage device", "A large desktop computer"], answer: 1 },
+  { q: "What is the major difference between microcontroller and microprocessor?", options: ["Microcontroller is faster", "Microprocessor has more memory", "Microcontroller has built-in peripherals", "Microprocessor is embedded"], answer: 2 },
+  { q: "Which of these is an example of a microcontroller?", options: ["Intel i7", "Arduino Uno", "Raspberry Pi", "AMD Ryzen"], answer: 1 },
+  { q: "In a temperature-controlled fan, which device acts as the actuator?", options: ["Temperature sensor", "Fan", "Display", "Battery"], answer: 1 },
+  { q: "Which of the following controllers is most commonly used in small embedded systems?", options: ["PLC", "Raspberry Pi", "Arduino", "Mainframe"], answer: 2 },
+  { q: "Which component of an embedded system processes inputs and controls outputs?", options: ["Sensor", "Actuator", "Controller", "Power supply"], answer: 2 },
+  { q: "Which sensor is used in automatic irrigation systems?", options: ["Temperature sensor", "Light sensor", "Moisture sensor", "IR sensor"], answer: 2 },
+  { q: "What kind of signal do most sensors provide to the controller?", options: ["Analog or Digital", "Only Analog", "Only Digital", "Power signal"], answer: 0 },
+
+  { "q": "What is the default file extension for Arduino sketches?", "options": [" .ino", ".c", ".cpp", ".ard"], "answer": 0 },
+  { "q": "Which function in Arduino sketch runs only once when the board is powered on or reset?", "options": ["loop()", "main()", "start()", "setup()"], "answer": 3 },
+  { "q": "What is the role of the Serial Monitor in Arduino IDE?", "options": ["To upload the code", "To monitor USB port", "To communicate with sensors", "To display data sent via Serial.print()"], "answer": 3 },
+  { "q": "Which of the following is a valid variable name in C for Arduino?", "options": ["1value", "_temp", "float", "value$"], "answer": 1 },
+  { "q": "Which data type is used for storing whole numbers in Arduino C?", "options": ["float", "int", "char", "bool"], "answer": 1 },
+  { "q": "Which operator is used for multiplication in C?", "options": ["^", "x", "*", "%"], "answer": 2 },
+  { "q": "Which of the following is a constant in C?", "options": ["int", "=", "42", "main"], "answer": 2 },
+  { "q": "Which of the following is a relational operator?", "options": ["+", "<", "&&", "="], "answer": 1 },
+  { "q": "Which loop is guaranteed to execute at least once?", "options": ["for", "while", "do-while", "none"], "answer": 2 },
+  { "q": "What is the output of the expression: 5 + 3 * 2?", "options": ["16", "11", "13", "10"], "answer": 1 },
+  { "q": "What is the correct way to declare an array of 5 integers in Arduino C?", "options": ["int arr[] = 5;", "int arr[5];", "array arr(5);", "arr = int[5];"], "answer": 1 },
+  { "q": "What is the purpose of the prototype of a function?", "options": ["To call the function", "To define the return type", "To declare the function before main", "To pass variables"], "answer": 2 },
+  { "q": "Which function is used to read analog data in Arduino?", "options": ["digitalRead()", "analogRead()", "analogWrite()", "readAnalog()"], "answer": 1 },
+  { "q": "Which sensor is used to detect temperature and humidity?", "options": ["LDR", "MQ135", "DHT11", "IR sensor"], "answer": 2 },
+  { "q": "Which component displays text data on screen in Arduino projects?", "options": ["LED", "LCD", "Keypad", "Relay"], "answer": 1 },
+  { "q": "Which module is used to provide Bluetooth communication with Arduino?", "options": ["IR", "Wi-Fi", "HC-05", "DHT11"], "answer": 2 },
+  { "q": "What is the function of a relay module in Arduino circuits?", "options": ["Measure voltage", "Control analog pins", "Drive sensors", "Switch high voltage devices like 220V AC"], "answer": 3 },
+  { q: "Why is security important in IoT devices?", options: ["To reduce cost", "To improve performance", "To prevent unauthorized access", "To make devices look good"], answer: 2 },
+  { q: "Which of the following is a major concern in IoT-enabled devices?", options: ["Color quality", "Speed of charging", "Privacy", "Battery weight"], answer: 2 },
+  { q: "What does IoT stand for?", options: ["Internet of Terms", "Internet of Tools", "Internet of Things", "Interface of Technology"], answer: 2 },
+  { q: "Which is the correct example of a consumer IoT device?", options: ["Server cluster", "Smartwatch", "Supercomputer", "BIOS chip"], answer: 1 },
+  { q: "What is one of the key challenges for securing IoT devices?", options: ["Lack of internet", "Limited processing power", "Too many colors", "No ports"], answer: 1 },
+  { q: "Which of the following is a common method to protect IoT devices?", options: ["Ignore firmware updates", "Use default passwords", "Encrypt data", "Disable internet"], answer: 2 },
+  { q: "What level of security focuses on encryption and secure communication?", options: ["Physical", "Network", "Application", "Transport"], answer: 3 },
+  { q: "What is a common threat to IoT security?", options: ["Dust", "Electric shock", "Malware", "Bright screen"], answer: 2 },
+  { q: "Why do IoT devices need powerful cores in the future ecosystem?", options: ["To play games", "To build strong security algorithms", "To charge faster", "To reduce size"], answer: 1 },
+  { q: "Which of the following trends is enhancing IoT device intelligence?", options: ["AI and ML", "Bluetooth", "Flashlight", "USB cable"], answer: 0 },
+  { q: "What does AI stand for in IoT context?", options: ["Automatic Interface", "Advanced Internet", "Artificial Intelligence", "Active Input"], answer: 2 },
+  { q: "Which technology helps IoT devices learn from data patterns?", options: ["Machine Learning", "Hard Coding", "Screen Tapping", "Power Saving"], answer: 0 },
+  { q: "What is the purpose of privacy in IoT?", options: ["Save battery", "Hide device", "Protect user data", "Make it faster"], answer: 2 },
+  { q: "Which is NOT a valid security measure for IoT?", options: ["Strong passwords", "Firmware updates", "Data encryption", "Using outdated software"], answer: 3 },
+  { q: "How can AI help in IoT security?", options: ["By disabling firewalls", "By analyzing patterns and threats", "By reducing device size", "By removing encryption"], answer: 1 },
+  { q: "Why is firmware update important in IoT devices?", options: ["To increase weight", "To change shape", "To patch vulnerabilities", "To reduce memory"], answer: 2 },
+  { q: "What kind of data do IoT devices commonly collect?", options: ["Random colors", "User behavior and environment", "Code errors", "Battery names"], answer: 1 },
+  { q: "Which of the following is a key determinant of personality?", options: ["Height", "Wealth", "Self-awareness", "Age"], answer: 2 },
+  { q: "What is the first step in developing self-awareness?", options: ["Blaming others", "Understanding one's strengths and weaknesses", "Avoiding feedback", "Focusing on others"], answer: 1 },
+  { q: "Motivation can best be described as:", options: ["The need for food", "The drive to achieve goals", "A type of body gesture", "A form of communication"], answer: 1 },
+  { q: "Which of these is an example of self-discipline?", options: ["Skipping deadlines", "Procrastinating", "Consistent study habits", "Overeating"], answer: 2 },
+  { q: "Building a positive personality involves:", options: ["Being aggressive", "Always agreeing with others", "Maintaining a negative outlook", "Being respectful and optimistic"], answer: 3 },
+  { q: "What type of gesture usually shows confidence?", options: ["Slouching", "Avoiding eye contact", "Firm handshake", "Crossed arms"], answer: 2 },
+  { q: "What does self-esteem refer to?", options: ["Others' opinion about us", "Our sense of self-worth", "Our knowledge level", "Our body language"], answer: 1 },
+  { q: "Self-efficacy is best defined as:", options: ["Believing others can succeed", "The ability to manage time", "Belief in one's ability to succeed", "Level of physical fitness"], answer: 2 },
+  { q: "Which of the following helps in time management?", options: ["Waking up late", "Making a daily schedule", "Avoiding work", "Ignoring deadlines"], answer: 1 },
+  { q: "Which of these is a technique for stress management?", options: ["Avoiding problems", "Meditation and exercise", "Suppressing emotions", "Overworking"], answer: 1 },
+  { q: "Good manners include:", options: ["Interrupting others", "Saying 'please' and 'thank you'", "Ignoring people", "Being rude"], answer: 1 },
+  { q: "Which of the following is an attribute of effective communication?", options: ["Unclear message", "One-way interaction", "Active listening", "Ignoring feedback"], answer: 2 },
+  { q: "Which is NOT a category of communication?", options: ["Verbal", "Non-verbal", "Technical", "Written"], answer: 2 },
+  { q: "What is the purpose of a resume?", options: ["To send a complaint", "To apply for leave", "To present one's skills and qualifications", "To narrate a story"], answer: 2 },
+  { q: "Which letter is written to request for a job position?", options: ["Leave letter", "Application letter", "Informal letter", "Complaint letter"], answer: 1 },
+  { q: "Which of the following is important for a successful interview?", options: ["Poor grooming", "Late arrival", "Confident body language", "Speaking too fast"], answer: 2 },
+  { q: "What does maintaining eye contact during an interview signify?", options: ["Disinterest", "Confidence and honesty", "Disrespect", "Anxiety"], answer: 1 }    
+];
+
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+    let visited = Array(questions.length).fill(false);
+    let marked = Array(questions.length).fill(false);
+    let timer;
+    let timeLeft = 60 * 60;
+
+    function startTest() {
+      const name = document.getElementById("studentName").value.trim();
+      if (!name) return alert("Please enter your name to start the test.");
+      document.getElementById("studentForm").classList.add("hidden");
+      document.getElementById("quizBox").classList.remove("hidden");
+      document.querySelector(".header h1").innerHTML += `Name : - ${name}`;
+      document.getElementById("totalQ").innerText = questions.length;
+      generatePagination();
+      loadQuestion();
+      updateStats();
+      startTimer();
+    }
+
+    function loadQuestion(index = current) {
+      current = index;
+      visited[current] = true;
+      const q = questions[current];
+      const box = document.getElementById("questionContainer");
+      box.innerHTML = `<h3>Q${current + 1}. ${q.q}</h3><div class='options'>` +
+        q.options.map((opt, i) => `
+          <label><input type="radio" name="q${current}" ${answers[current] === i ? "checked" : ""} onclick="selectOption(${i})"> ${opt}</label>
+        `).join('') + '</div>';
+      highlightPagination();
+      updateStats();
+    }
+
+function selectOption(index) {
+  answers[current] = index;
+  updateStats();
+  highlightPagination(); // ← Add this line to update button color immediately after selecting
+}
+
+
+    function nextQuestion() {
+      if (current < questions.length - 1) loadQuestion(current + 1);
+    }
+
+    function prevQuestion() {
+      if (current > 0) loadQuestion(current - 1);
+    }
+
+    function toggleMarkReview() {
+      marked[current] = !marked[current];
+      highlightPagination();
+    }
+
+    function generatePagination() {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = '';
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i + 1;
+        btn.onclick = () => loadQuestion(i);
+        btn.id = `qbtn${i}`;
+        pagination.appendChild(btn);
+      }
+    }
+
+   function highlightPagination() {
+  for (let i = 0; i < questions.length; i++) {
+    const btn = document.getElementById(`qbtn${i}`);
+    btn.className = ''; // Reset classes
+
+    if (!visited[i]) {
+      btn.classList.add("unvisited"); // Blue
+    } else if (marked[i]) {
+      btn.classList.add("marked"); // Yellow
+    } else if (answers[i] === null) {
+      btn.classList.add("visited-unattempted"); // Red
+    } else {
+      btn.classList.add("visited-attempted"); // Green
+    }
+  }
+}
+
+
+    function updateStats() {
+      const attempted = answers.filter(a => a !== null).length;
+      const visitedCount = visited.filter(v => v).length;
+      document.getElementById("attempted").innerText = attempted;
+      document.getElementById("visited").innerText = visitedCount;
+      document.getElementById("notVisited").innerText = questions.length - visitedCount;
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          submitQuiz();
+          return;
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        timeLeft--;
+      }, 1000);
+    }
+
+    function submitQuiz() {
+      clearInterval(timer);
+      document.getElementById("quizBox").classList.add("hidden");
+      let score = 0;
+      let output = '';
+      questions.forEach((q, i) => {
+        const correct = q.answer;
+        const chosen = answers[i];
+        const status = (chosen === correct) ? '✅' : '❌';
+        if (chosen === correct) score++;
+
+        output += `<div class='question-box'>
+          <h3>Q${i + 1}. ${q.q}</h3>
+          <div class='options'>` + q.options.map((opt, j) => {
+            const isCorrect = (j === correct);
+            const isSelected = (j === chosen);
+            let cls = '';
+            if (isSelected && isCorrect) cls = 'correct';
+            else if (isSelected && !isCorrect) cls = 'incorrect';
+            else if (isCorrect) cls = 'correct';
+            return `<label class='${cls}'>${opt}</label>`;
+          }).join('') + `</div><p><strong>${status}</strong></p></div>`;
+      });
+
+      const percent = ((score / questions.length) * 100).toFixed(2);
+      const name = document.getElementById("studentName").value;
+      document.getElementById("resultBox").innerHTML = `
+        <h2>Result Summary for ${name}</h2>
+        <p><strong>Total Questions:</strong> ${questions.length}</p>
+        <p><strong>Attempted:</strong> ${answers.filter(a => a !== null).length}</p>
+        <p><strong>Correct Answers:</strong> ${score}</p>
+        <p><strong>Percentage:</strong> ${percent}%</p><hr>` + output;
+      document.getElementById("resultBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>
