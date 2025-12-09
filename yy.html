@@ -1,0 +1,802 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Skills Mock Test</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .question-status {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .question-status:hover {
+      transform: scale(1.1);
+    }
+    
+    .status-not-visited {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    
+    .status-not-attempted {
+      background-color: #fecaca;
+      color: #991b1b;
+    }
+    
+    .status-attempted {
+      background-color: #86efac;
+      color: #166534;
+    }
+    
+    .status-marked {
+      background-color: #fcd34d;
+      color: #92400e;
+    }
+    
+    .option-label {
+      cursor: pointer;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .option-label:hover {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+    
+    .option-label input:checked + span {
+      font-weight: 600;
+    }
+    
+    .option-label input:checked {
+      accent-color: #3b82f6;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+   <div class="min-h-full p-6">
+    <div class="max-w-7xl mx-auto"><!-- Header -->
+     <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+      <h1 id="test-title" class="text-3xl font-bold text-gray-800 mb-2">Introduction to Generative AI Mock Test</h1>
+      <p id="instructions" class="text-gray-600">Read each question carefully and select the best answer. You can navigate between questions and mark questions for review.</p>
+     </div>
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><!-- Question Panel -->
+      <div class="lg:col-span-2">
+       <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+         <h2 class="text-xl font-semibold text-gray-700">Question <span id="current-q-num">1</span> of 50</h2><button id="mark-review-btn" class="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg font-semibold hover:bg-yellow-500 transition"> Mark for Review </button>
+        </div>
+        <div id="question-container" class="mb-6">
+         <p class="text-lg text-gray-800 mb-4 leading-relaxed"></p>
+         <div id="options-container" class="space-y-3"></div>
+        </div><!-- Navigation Buttons -->
+        <div class="flex justify-between items-center pt-4 border-t"><button id="prev-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"> Previous </button> <button id="next-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"> Next </button> <button id="submit-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition hidden"> Submit Test </button>
+        </div>
+       </div>
+      </div><!-- Question Navigator Panel -->
+      <div class="lg:col-span-1">
+       <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Question Palette</h3><!-- Legend -->
+        <div class="grid grid-cols-2 gap-2 mb-4 text-xs">
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 status-not-visited rounded"></div><span>Not Visited</span>
+         </div>
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 status-not-attempted rounded"></div><span>Not Attempted</span>
+         </div>
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 status-attempted rounded"></div><span>Attempted</span>
+         </div>
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 status-marked rounded"></div><span>Marked</span>
+         </div>
+        </div><!-- Question Grid -->
+        <div id="question-grid" class="grid grid-cols-5 gap-2"></div>
+       </div>
+      </div>
+     </div><!-- Results Modal -->
+     <div id="results-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full max-h-[90%] overflow-y-auto">
+       <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Test Results</h2><!-- Score Summary -->
+       <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mb-6">
+        <div class="text-center mb-4">
+         <div class="text-5xl font-bold text-blue-600 mb-2">
+          <span id="score-percentage">0</span>%
+         </div>
+         <p class="text-gray-600 text-lg">Your Score</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-center">
+         <div>
+          <p class="text-3xl font-bold text-green-600" id="correct-count">0</p>
+          <p class="text-gray-600">Correct</p>
+         </div>
+         <div>
+          <p class="text-3xl font-bold text-red-600" id="incorrect-count">0</p>
+          <p class="text-gray-600">Incorrect</p>
+         </div>
+        </div>
+       </div><!-- Detailed Stats -->
+       <div class="space-y-3 text-gray-700 mb-6">
+        <p class="text-lg">Total Questions: <span class="font-semibold">50</span></p>
+        <p class="text-lg">Attempted: <span id="attempted-count" class="font-semibold text-green-600">0</span></p>
+        <p class="text-lg">Not Attempted: <span id="not-attempted-count" class="font-semibold text-red-600">0</span></p>
+        <p class="text-lg">Marked for Review: <span id="marked-count" class="font-semibold text-yellow-600">0</span></p>
+       </div><!-- Review Answers Button -->
+       <div class="flex gap-3"><button id="review-answers-btn" class="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"> Review Answers </button> <button id="close-modal-btn" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"> Close </button>
+       </div>
+      </div>
+     </div><!-- Answer Review Modal -->
+     <div id="review-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-lg shadow-2xl p-8 max-w-4xl w-full max-h-[90%] overflow-y-auto">
+       <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Answer Review</h2><button id="close-review-btn" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">×</button>
+       </div>
+       <div id="review-content" class="space-y-6"></div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const questions = [
+      // Real Images vs AI-Generated Images (4 questions)
+      {
+        question: "What is the main difference between real and AI-generated images?",
+        options: ["Real images are always in color", "AI-generated images are created by algorithms from training data", "Real images are always better quality", "AI-generated images are always animated"],
+        correctAnswer: 1,
+        topic: "Real Images vs AI-Generated Images"
+      },
+      {
+        question: "Which technology is commonly used to generate AI images?",
+        options: ["Microsoft Word", "Generative Adversarial Networks (GANs)", "Simple calculators", "Traditional cameras"],
+        correctAnswer: 1,
+        topic: "Real Images vs AI-Generated Images"
+      },
+      {
+        question: "What is a key characteristic of AI-generated images?",
+        options: ["They always look fake", "They are created through machine learning models", "They cannot be realistic", "They are always black and white"],
+        correctAnswer: 1,
+        topic: "Real Images vs AI-Generated Images"
+      },
+      {
+        question: "Which statement about AI-generated images is true?",
+        options: ["They require a physical camera", "They can be created from text descriptions", "They cannot include people", "They are always low quality"],
+        correctAnswer: 1,
+        topic: "Real Images vs AI-Generated Images"
+      },
+
+      // Supervised Learning and Discriminative Modelling (5 questions)
+      {
+        question: "What is supervised learning?",
+        options: ["Learning without any data", "Learning from labeled training data", "Learning that doesn't require algorithms", "Learning without supervision"],
+        correctAnswer: 1,
+        topic: "Supervised Learning and Discriminative Modelling"
+      },
+      {
+        question: "What does discriminative modeling focus on?",
+        options: ["Generating new data", "Distinguishing between different classes", "Creating images", "Deleting data"],
+        correctAnswer: 1,
+        topic: "Supervised Learning and Discriminative Modelling"
+      },
+      {
+        question: "Which is an example of supervised learning?",
+        options: ["Clustering similar items", "Email spam classification", "Random data generation", "Unsupervised image creation"],
+        correctAnswer: 1,
+        topic: "Supervised Learning and Discriminative Modelling"
+      },
+      {
+        question: "What is required for supervised learning?",
+        options: ["No data needed", "Labeled training dataset", "Only output data", "Random inputs"],
+        correctAnswer: 1,
+        topic: "Supervised Learning and Discriminative Modelling"
+      },
+      {
+        question: "What does a discriminative model predict?",
+        options: ["New data samples", "Class labels or outputs based on input features", "Random values", "Training data"],
+        correctAnswer: 1,
+        topic: "Supervised Learning and Discriminative Modelling"
+      },
+
+      // AI or Real Image....How to Identify? (5 questions)
+      {
+        question: "What is a common sign that an image might be AI-generated?",
+        options: ["Perfect lighting", "Unusual details like distorted hands or eyes", "High resolution", "Natural colors"],
+        correctAnswer: 1,
+        topic: "AI or Real Image....How to Identify?"
+      },
+      {
+        question: "Which feature can help identify AI-generated faces?",
+        options: ["Normal facial expressions", "Asymmetrical or unrealistic features", "Clear backgrounds", "Natural skin tones"],
+        correctAnswer: 1,
+        topic: "AI or Real Image....How to Identify?"
+      },
+      {
+        question: "What should you check in the background of a suspected AI image?",
+        options: ["If it's blurry", "Inconsistencies in patterns, text, or objects", "If it has trees", "Color saturation"],
+        correctAnswer: 1,
+        topic: "AI or Real Image....How to Identify?"
+      },
+      {
+        question: "Why is text in images a good indicator of AI generation?",
+        options: ["Text is always perfect", "AI often generates garbled or nonsensical text", "Text is always missing", "Text is always in English"],
+        correctAnswer: 1,
+        topic: "AI or Real Image....How to Identify?"
+      },
+      {
+        question: "What tool can help verify if an image is AI-generated?",
+        options: ["Paint software", "AI detection tools and reverse image search", "Photo filters", "Camera settings"],
+        correctAnswer: 1,
+        topic: "AI or Real Image....How to Identify?"
+      },
+
+      // Unsupervised Learning and Generative Modelling (5 questions)
+      {
+        question: "What is unsupervised learning?",
+        options: ["Learning from labeled data", "Learning patterns from unlabeled data", "Learning with constant supervision", "Learning that requires teachers"],
+        correctAnswer: 1,
+        topic: "Unsupervised Learning and Generative Modelling"
+      },
+      {
+        question: "What does generative modeling do?",
+        options: ["Only classifies data", "Creates new data similar to training data", "Deletes existing data", "Only analyzes data"],
+        correctAnswer: 1,
+        topic: "Unsupervised Learning and Generative Modelling"
+      },
+      {
+        question: "Which is an example of generative AI?",
+        options: ["Spam filter", "Image generation from text prompts", "Data sorting", "File compression"],
+        correctAnswer: 1,
+        topic: "Unsupervised Learning and Generative Modelling"
+      },
+      {
+        question: "What is a key difference between discriminative and generative models?",
+        options: ["They are the same", "Discriminative classifies, generative creates new data", "Generative only deletes data", "Discriminative creates data"],
+        correctAnswer: 1,
+        topic: "Unsupervised Learning and Generative Modelling"
+      },
+      {
+        question: "Which technique is used in generative modeling?",
+        options: ["Simple sorting", "Variational Autoencoders (VAEs)", "Basic arithmetic", "Manual data entry"],
+        correctAnswer: 1,
+        topic: "Unsupervised Learning and Generative Modelling"
+      },
+
+      // Examples of Generative AI (5 questions)
+      {
+        question: "Which of the following is an example of generative AI?",
+        options: ["Antivirus software", "ChatGPT generating text", "Calculator", "Spreadsheet software"],
+        correctAnswer: 1,
+        topic: "Examples of Generative AI"
+      },
+      {
+        question: "What can DALL-E do?",
+        options: ["Only edit photos", "Generate images from text descriptions", "Compress files", "Play games"],
+        correctAnswer: 1,
+        topic: "Examples of Generative AI"
+      },
+      {
+        question: "Which generative AI tool creates music?",
+        options: ["Microsoft Excel", "Amper Music or AIVA", "Adobe Reader", "Windows Media Player"],
+        correctAnswer: 1,
+        topic: "Examples of Generative AI"
+      },
+      {
+        question: "What does generative AI in video creation do?",
+        options: ["Only plays videos", "Creates synthetic videos or deepfakes", "Converts video formats", "Records live video"],
+        correctAnswer: 1,
+        topic: "Examples of Generative AI"
+      },
+      {
+        question: "Which is a text-based generative AI application?",
+        options: ["Image viewer", "Language models like GPT", "Video player", "Audio recorder"],
+        correctAnswer: 1,
+        topic: "Examples of Generative AI"
+      },
+
+      // Generative AI Tools (4 questions)
+      {
+        question: "Which tool is used for AI image generation?",
+        options: ["Notepad", "Midjourney or Stable Diffusion", "Calculator", "File Explorer"],
+        correctAnswer: 1,
+        topic: "Generative AI Tools"
+      },
+      {
+        question: "What is ChatGPT primarily used for?",
+        options: ["Image editing", "Conversational AI and text generation", "Video streaming", "Data storage"],
+        correctAnswer: 1,
+        topic: "Generative AI Tools"
+      },
+      {
+        question: "Which platform allows users to create AI-generated art?",
+        options: ["Microsoft Word", "Artbreeder or NightCafe", "Excel", "PowerPoint"],
+        correctAnswer: 1,
+        topic: "Generative AI Tools"
+      },
+      {
+        question: "What does GitHub Copilot help with?",
+        options: ["Gaming", "AI-assisted code generation", "Video editing", "Music production"],
+        correctAnswer: 1,
+        topic: "Generative AI Tools"
+      },
+
+      // The Potential Negative Impact on Society (4 questions)
+      {
+        question: "What is a major concern about AI-generated content?",
+        options: ["It's too expensive", "Spread of misinformation and deepfakes", "It's always accurate", "It cannot be created"],
+        correctAnswer: 1,
+        topic: "The Potential Negative Impact on Society"
+      },
+      {
+        question: "How can generative AI negatively impact employment?",
+        options: ["Creates more jobs only", "May automate jobs leading to displacement", "Has no impact on jobs", "Only creates manual labor jobs"],
+        correctAnswer: 1,
+        topic: "The Potential Negative Impact on Society"
+      },
+      {
+        question: "What privacy concern is associated with generative AI?",
+        options: ["Increased privacy", "Misuse of personal data and identity theft", "Complete data security", "No privacy concerns"],
+        correctAnswer: 1,
+        topic: "The Potential Negative Impact on Society"
+      },
+      {
+        question: "What is a potential harm of AI-generated fake news?",
+        options: ["Improved information quality", "Manipulation of public opinion and social unrest", "Better journalism", "More accurate reporting"],
+        correctAnswer: 1,
+        topic: "The Potential Negative Impact on Society"
+      },
+
+      // Generative AI Boon or Bane (4 questions)
+      {
+        question: "Which statement represents generative AI as a boon?",
+        options: ["It only causes problems", "Enhances creativity and productivity", "It has no benefits", "It cannot be useful"],
+        correctAnswer: 1,
+        topic: "Generative AI Boon or Bane"
+      },
+      {
+        question: "What is a beneficial use of generative AI in healthcare?",
+        options: ["Replacing all doctors", "Drug discovery and medical imaging analysis", "Eliminating hospitals", "Increasing disease"],
+        correctAnswer: 1,
+        topic: "Generative AI Boon or Bane"
+      },
+      {
+        question: "Why might generative AI be considered a bane?",
+        options: ["It helps education", "Potential for misuse and ethical concerns", "It improves efficiency", "It reduces costs"],
+        correctAnswer: 1,
+        topic: "Generative AI Boon or Bane"
+      },
+      {
+        question: "How can generative AI benefit education?",
+        options: ["By eliminating teachers", "Personalized learning and content creation", "By making learning harder", "By reducing access to information"],
+        correctAnswer: 1,
+        topic: "Generative AI Boon or Bane"
+      },
+
+      // Ethical Considerations of using Generative AI (5 questions)
+      {
+        question: "What is an ethical concern regarding AI-generated content?",
+        options: ["It's too cheap", "Ownership and copyright issues", "It's always ethical", "No concerns exist"],
+        correctAnswer: 1,
+        topic: "Ethical Considerations of using Generative AI"
+      },
+      {
+        question: "Why is bias in AI training data a concern?",
+        options: ["It makes AI faster", "Can perpetuate discrimination and unfairness", "It improves accuracy", "It has no impact"],
+        correctAnswer: 1,
+        topic: "Ethical Considerations of using Generative AI"
+      },
+      {
+        question: "What ethical issue arises from deepfakes?",
+        options: ["Better video quality", "Potential for fraud and defamation", "Improved entertainment", "Enhanced privacy"],
+        correctAnswer: 1,
+        topic: "Ethical Considerations of using Generative AI"
+      },
+      {
+        question: "What does transparency in AI mean?",
+        options: ["Hiding AI operations", "Clear understanding of how AI makes decisions", "Making AI invisible", "Keeping AI secret"],
+        correctAnswer: 1,
+        topic: "Ethical Considerations of using Generative AI"
+      },
+      {
+        question: "Why is consent important in using generative AI?",
+        options: ["It's not important", "People should know if their data is used for training", "To slow down AI", "To make AI expensive"],
+        correctAnswer: 1,
+        topic: "Ethical Considerations of using Generative AI"
+      },
+
+      // Responsible Use of Generative AI (5 questions)
+      {
+        question: "What does responsible use of generative AI include?",
+        options: ["Using it without restrictions", "Verifying information and avoiding harmful content", "Ignoring ethical guidelines", "Creating fake content"],
+        correctAnswer: 1,
+        topic: "Responsible Use of Generative AI"
+      },
+      {
+        question: "How should AI-generated content be labeled?",
+        options: ["Never labeled", "Clearly disclosed as AI-generated", "Hidden from users", "Pretended to be human-made"],
+        correctAnswer: 1,
+        topic: "Responsible Use of Generative AI"
+      },
+      {
+        question: "What is an important guideline for using generative AI?",
+        options: ["Spread misinformation", "Respect intellectual property rights", "Ignore privacy concerns", "Create harmful content"],
+        correctAnswer: 1,
+        topic: "Responsible Use of Generative AI"
+      },
+      {
+        question: "Why should we be cautious about AI-generated information?",
+        options: ["It's always perfect", "It may contain errors or biases", "It's always factual", "It needs no verification"],
+        correctAnswer: 1,
+        topic: "Responsible Use of Generative AI"
+      },
+      {
+        question: "What role do users play in responsible AI usage?",
+        options: ["No role at all", "Critical thinking and ethical decision-making", "Blind acceptance", "Ignoring consequences"],
+        correctAnswer: 1,
+        topic: "Responsible Use of Generative AI"
+      }
+    ];
+
+    const defaultConfig = {
+      test_title: "Introduction to Generative AI Mock Test",
+      instructions_text: "Read each question carefully and select the best answer. You can navigate between questions and mark questions for review.",
+      previous_button_text: "Previous",
+      next_button_text: "Next",
+      submit_button_text: "Submit Test",
+      background_color: "#667eea",
+      surface_color: "#ffffff",
+      text_color: "#1f2937",
+      primary_action_color: "#3b82f6",
+      secondary_action_color: "#6b7280",
+      font_family: "system-ui",
+      font_size: 16
+    };
+
+    let currentQuestion = 0;
+    const questionStates = Array(50).fill('not-visited');
+    const userAnswers = Array(50).fill(null);
+    const markedForReview = Array(50).fill(false);
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const questionContainer = document.getElementById('question-container');
+      const questionText = questionContainer.querySelector('p');
+      const optionsContainer = document.getElementById('options-container');
+      
+      questionText.textContent = q.question;
+      optionsContainer.innerHTML = '';
+      
+      q.options.forEach((option, index) => {
+        const optionDiv = document.createElement('label');
+        optionDiv.className = 'option-label';
+        optionDiv.innerHTML = `
+          <input type="radio" name="answer" value="${index}" ${userAnswers[currentQuestion] === index ? 'checked' : ''}>
+          <span>${option}</span>
+        `;
+        optionDiv.addEventListener('click', () => selectAnswer(index));
+        optionsContainer.appendChild(optionDiv);
+      });
+
+      document.getElementById('current-q-num').textContent = currentQuestion + 1;
+      
+      if (questionStates[currentQuestion] === 'not-visited') {
+        questionStates[currentQuestion] = 'not-attempted';
+      }
+      
+      updateNavigationButtons();
+      updateQuestionGrid();
+    }
+
+    function selectAnswer(answerIndex) {
+      userAnswers[currentQuestion] = answerIndex;
+      questionStates[currentQuestion] = 'attempted';
+      updateQuestionGrid();
+    }
+
+    function updateNavigationButtons() {
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const submitBtn = document.getElementById('submit-btn');
+      
+      prevBtn.disabled = currentQuestion === 0;
+      
+      if (currentQuestion === 49) {
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      }
+    }
+
+    function updateQuestionGrid() {
+      const grid = document.getElementById('question-grid');
+      grid.innerHTML = '';
+      
+      for (let i = 0; i < 50; i++) {
+        const button = document.createElement('button');
+        button.className = 'question-status';
+        button.textContent = i + 1;
+        
+        if (markedForReview[i]) {
+          button.classList.add('status-marked');
+        } else {
+          button.classList.add(`status-${questionStates[i]}`);
+        }
+        
+        button.addEventListener('click', () => {
+          currentQuestion = i;
+          renderQuestion();
+        });
+        
+        grid.appendChild(button);
+      }
+    }
+
+    function showResults() {
+      const attempted = questionStates.filter(s => s === 'attempted').length;
+      const notAttempted = questionStates.filter(s => s === 'not-attempted' || s === 'not-visited').length;
+      const marked = markedForReview.filter(m => m).length;
+      
+      // Calculate score
+      let correctCount = 0;
+      let incorrectCount = 0;
+      
+      for (let i = 0; i < questions.length; i++) {
+        if (userAnswers[i] !== null) {
+          if (userAnswers[i] === questions[i].correctAnswer) {
+            correctCount++;
+          } else {
+            incorrectCount++;
+          }
+        }
+      }
+      
+      const percentage = attempted > 0 ? Math.round((correctCount / 50) * 100) : 0;
+      
+      document.getElementById('score-percentage').textContent = percentage;
+      document.getElementById('correct-count').textContent = correctCount;
+      document.getElementById('incorrect-count').textContent = incorrectCount;
+      document.getElementById('attempted-count').textContent = attempted;
+      document.getElementById('not-attempted-count').textContent = notAttempted;
+      document.getElementById('marked-count').textContent = marked;
+      document.getElementById('results-modal').classList.remove('hidden');
+    }
+
+    function showReviewAnswers() {
+      const reviewContent = document.getElementById('review-content');
+      reviewContent.innerHTML = '';
+      
+      questions.forEach((q, index) => {
+        const isCorrect = userAnswers[index] === q.correctAnswer;
+        const wasAttempted = userAnswers[index] !== null;
+        
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'border rounded-lg p-4 ' + (isCorrect ? 'bg-green-50 border-green-300' : wasAttempted ? 'bg-red-50 border-red-300' : 'bg-gray-50 border-gray-300');
+        
+        let statusBadge = '';
+        if (!wasAttempted) {
+          statusBadge = '<span class="px-3 py-1 bg-gray-500 text-white rounded-full text-sm font-semibold">Not Attempted</span>';
+        } else if (isCorrect) {
+          statusBadge = '<span class="px-3 py-1 bg-green-500 text-white rounded-full text-sm font-semibold">✓ Correct</span>';
+        } else {
+          statusBadge = '<span class="px-3 py-1 bg-red-500 text-white rounded-full text-sm font-semibold">✗ Incorrect</span>';
+        }
+        
+        questionDiv.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="font-bold text-lg text-gray-800">Question ${index + 1}</h3>
+            ${statusBadge}
+          </div>
+          <p class="text-gray-700 mb-3">${q.question}</p>
+          <div class="space-y-2">
+            ${q.options.map((option, optIndex) => {
+              let optionClass = 'p-3 rounded border-2 ';
+              let icon = '';
+              
+              if (optIndex === q.correctAnswer) {
+                optionClass += 'border-green-500 bg-green-100';
+                icon = '<span class="text-green-600 font-bold">✓ Correct Answer</span>';
+              } else if (optIndex === userAnswers[index] && userAnswers[index] !== q.correctAnswer) {
+                optionClass += 'border-red-500 bg-red-100';
+                icon = '<span class="text-red-600 font-bold">✗ Your Answer</span>';
+              } else {
+                optionClass += 'border-gray-300 bg-white';
+              }
+              
+              return `
+                <div class="${optionClass}">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-800">${option}</span>
+                    ${icon}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <p class="text-sm text-gray-600 mt-3"><strong>Topic:</strong> ${q.topic}</p>
+        `;
+        
+        reviewContent.appendChild(questionDiv);
+      });
+      
+      document.getElementById('results-modal').classList.add('hidden');
+      document.getElementById('review-modal').classList.remove('hidden');
+    }
+
+    async function onConfigChange(config) {
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const baseFontStack = 'system-ui, -apple-system, sans-serif';
+
+      document.getElementById('test-title').textContent = config.test_title || defaultConfig.test_title;
+      document.getElementById('instructions').textContent = config.instructions_text || defaultConfig.instructions_text;
+      document.getElementById('prev-btn').textContent = config.previous_button_text || defaultConfig.previous_button_text;
+      document.getElementById('next-btn').textContent = config.next_button_text || defaultConfig.next_button_text;
+      document.getElementById('submit-btn').textContent = config.submit_button_text || defaultConfig.submit_button_text;
+
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+
+      document.getElementById('app').style.background = `linear-gradient(135deg, ${bgColor} 0%, ${bgColor}dd 100%)`;
+      
+      const surfaces = document.querySelectorAll('.bg-white');
+      surfaces.forEach(el => el.style.backgroundColor = surfaceColor);
+
+      const textElements = document.querySelectorAll('h1, h2, h3, p, span, label, button');
+      textElements.forEach(el => {
+        el.style.color = textColor;
+        el.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      });
+
+      document.getElementById('test-title').style.fontSize = `${baseSize * 1.875}px`;
+      document.getElementById('instructions').style.fontSize = `${baseSize}px`;
+      document.querySelectorAll('h2').forEach(el => el.style.fontSize = `${baseSize * 1.25}px`);
+      document.querySelectorAll('h3').forEach(el => el.style.fontSize = `${baseSize * 1.125}px`);
+
+      const primaryButtons = [document.getElementById('next-btn'), document.getElementById('submit-btn')];
+      primaryButtons.forEach(btn => {
+        btn.style.backgroundColor = primaryColor;
+        btn.addEventListener('mouseenter', () => btn.style.backgroundColor = primaryColor + 'dd');
+        btn.addEventListener('mouseleave', () => btn.style.backgroundColor = primaryColor);
+      });
+
+      document.getElementById('prev-btn').style.backgroundColor = secondaryColor;
+    }
+
+    // Event Listeners
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentQuestion < 49) {
+        currentQuestion++;
+        renderQuestion();
+      }
+    });
+
+    document.getElementById('mark-review-btn').addEventListener('click', () => {
+      markedForReview[currentQuestion] = !markedForReview[currentQuestion];
+      updateQuestionGrid();
+    });
+
+    document.getElementById('submit-btn').addEventListener('click', () => {
+      showResults();
+    });
+
+    document.getElementById('close-modal-btn').addEventListener('click', () => {
+      document.getElementById('results-modal').classList.add('hidden');
+    });
+
+    document.getElementById('review-answers-btn').addEventListener('click', () => {
+      showReviewAnswers();
+    });
+
+    document.getElementById('close-review-btn').addEventListener('click', () => {
+      document.getElementById('review-modal').classList.add('hidden');
+      document.getElementById('results-modal').classList.remove('hidden');
+    });
+
+    // Initialize
+    renderQuestion();
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => {
+                config.primary_action_color = value;
+                window.elementSdk.setConfig({ primary_action_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => {
+                config.secondary_action_color = value;
+                window.elementSdk.setConfig({ secondary_action_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["test_title", config.test_title || defaultConfig.test_title],
+          ["instructions_text", config.instructions_text || defaultConfig.instructions_text],
+          ["previous_button_text", config.previous_button_text || defaultConfig.previous_button_text],
+          ["next_button_text", config.next_button_text || defaultConfig.next_button_text],
+          ["submit_button_text", config.submit_button_text || defaultConfig.submit_button_text]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ab52d72d53b8fbf',t:'MTc2NTI5MDM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
