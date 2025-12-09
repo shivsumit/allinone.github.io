@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+<!doctype html>
 <html lang="en" class="h-full">
  <head>
   <meta charset="UTF-8">
@@ -88,7 +88,7 @@
       <div class="lg:col-span-2">
        <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex justify-between items-center mb-4">
-         <h2 class="text-xl font-semibold text-gray-700">Question <span id="current-q-num">1</span> of 50</h2><button id="mark-review-btn" class="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg font-semibold hover:bg-yellow-500 transition"> Mark for Review </button>
+         <h2 class="text-xl font-semibold text-gray-700">Question <span id="current-q-num">1</span> of <span id="total-questions">50</span></h2><button id="mark-review-btn" class="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg font-semibold hover:bg-yellow-500 transition"> Mark for Review </button>
         </div>
         <div id="question-container" class="mb-6">
          <p class="text-lg text-gray-800 mb-4 leading-relaxed"></p>
@@ -141,7 +141,7 @@
         </div>
        </div><!-- Detailed Stats -->
        <div class="space-y-3 text-gray-700 mb-6">
-        <p class="text-lg">Total Questions: <span class="font-semibold">50</span></p>
+        <p class="text-lg">Total Questions: <span id="total-q-count" class="font-semibold">50</span></p>
         <p class="text-lg">Attempted: <span id="attempted-count" class="font-semibold text-green-600">0</span></p>
         <p class="text-lg">Not Attempted: <span id="not-attempted-count" class="font-semibold text-red-600">0</span></p>
         <p class="text-lg">Marked for Review: <span id="marked-count" class="font-semibold text-yellow-600">0</span></p>
@@ -476,9 +476,9 @@
     };
 
     let currentQuestion = 0;
-    const questionStates = Array(50).fill('not-visited');
-    const userAnswers = Array(50).fill(null);
-    const markedForReview = Array(50).fill(false);
+    const questionStates = Array(questions.length).fill('not-visited');
+    const userAnswers = Array(questions.length).fill(null);
+    const markedForReview = Array(questions.length).fill(false);
 
     function renderQuestion() {
       const q = questions[currentQuestion];
@@ -492,15 +492,30 @@
       q.options.forEach((option, index) => {
         const optionDiv = document.createElement('label');
         optionDiv.className = 'option-label';
-        optionDiv.innerHTML = `
-          <input type="radio" name="answer" value="${index}" ${userAnswers[currentQuestion] === index ? 'checked' : ''}>
-          <span>${option}</span>
-        `;
-        optionDiv.addEventListener('click', () => selectAnswer(index));
+        
+        const radioInput = document.createElement('input');
+        radioInput.type = 'radio';
+        radioInput.name = 'answer';
+        radioInput.value = index;
+        radioInput.checked = userAnswers[currentQuestion] === index;
+        
+        const optionSpan = document.createElement('span');
+        optionSpan.textContent = option;
+        
+        optionDiv.appendChild(radioInput);
+        optionDiv.appendChild(optionSpan);
+        
+        optionDiv.addEventListener('click', (e) => {
+          e.preventDefault();
+          selectAnswer(index);
+          renderQuestion();
+        });
+        
         optionsContainer.appendChild(optionDiv);
       });
 
       document.getElementById('current-q-num').textContent = currentQuestion + 1;
+      document.getElementById('total-questions').textContent = questions.length;
       
       if (questionStates[currentQuestion] === 'not-visited') {
         questionStates[currentQuestion] = 'not-attempted';
@@ -523,7 +538,7 @@
       
       prevBtn.disabled = currentQuestion === 0;
       
-      if (currentQuestion === 49) {
+      if (currentQuestion >= questions.length - 1) {
         nextBtn.classList.add('hidden');
         submitBtn.classList.remove('hidden');
       } else {
@@ -536,7 +551,7 @@
       const grid = document.getElementById('question-grid');
       grid.innerHTML = '';
       
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < questions.length; i++) {
         const button = document.createElement('button');
         button.className = 'question-status';
         button.textContent = i + 1;
@@ -575,8 +590,9 @@
         }
       }
       
-      const percentage = attempted > 0 ? Math.round((correctCount / 50) * 100) : 0;
+      const percentage = attempted > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
       
+      document.getElementById('total-q-count').textContent = questions.length;
       document.getElementById('score-percentage').textContent = percentage;
       document.getElementById('correct-count').textContent = correctCount;
       document.getElementById('incorrect-count').textContent = incorrectCount;
@@ -699,7 +715,7 @@
     });
 
     document.getElementById('next-btn').addEventListener('click', () => {
-      if (currentQuestion < 49) {
+      if (currentQuestion < questions.length - 1) {
         currentQuestion++;
         renderQuestion();
       }
@@ -798,5 +814,5 @@
       });
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ab52d72d53b8fbf',t:'MTc2NTI5MDM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ab5c0fc378591ac',t:'MTc2NTI5NjQyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
